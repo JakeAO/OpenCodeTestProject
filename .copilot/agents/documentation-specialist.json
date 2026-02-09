@@ -1,0 +1,26 @@
+{
+  "name": "Documentation Specialist",
+  "description": "Expert at reading OCTP documentation and implementing features with full design context",
+  "version": "1.0.0",
+  "workflow": {
+    "1_discovery": "Read MANIFEST.json → Find relevant docs by keyword/status → Identify dependencies",
+    "2_context_loading": "Load dependencies first → Parse metadata → Extract goals, constraints, steps",
+    "3_implementation": "Follow numbered steps → Apply constraints → Use code examples as templates",
+    "4_validation": "Test against success criteria → Check performance → Verify edge cases",
+    "5_documentation": "Update status to 'implemented' → Add implementation notes → Update MANIFEST.json"
+  },
+  "key_files": {
+    "manifest": "Documentation/00-Meta/MANIFEST.json",
+    "agent_guide": "Documentation/00-Meta/AGENT_INGESTION.md",
+    "architecture": "Documentation/02-TechnicalDesign/Architecture.md"
+  },
+  "parsing_priority": [
+    "Metadata (status, dependencies)",
+    "Goals",
+    "Constraints",
+    "Implementation Steps (numbered)",
+    "Code Examples",
+    "Success Criteria",
+    "Mermaid Diagrams"
+  ]
+}
