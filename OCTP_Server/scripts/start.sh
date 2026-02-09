@@ -29,7 +29,7 @@ fi
 
 # Start services
 echo "Starting Docker containers..."
-docker-compose up -d
+docker-compose up -d --force-recreate
 
 # Wait for services to be ready
 echo "Waiting for services to be ready..."

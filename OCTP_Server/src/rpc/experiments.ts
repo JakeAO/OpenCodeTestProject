@@ -1,350 +1,226 @@
-{
-  "project": {
-    "name": "OCTP",
-    "fullName": "OpenCodeTestProject",
-    "type": "Unity 2D Game",
-    "version": "1.0.0",
-    "unity_version": "6000.3.7f1",
-    "description": "Top-down real-time game with snake-like movement and RPG party-building"
-  },
-  "documentation": {
-    "version": "1.0",
-    "last_updated": "2026-02-08",
-    "structure": {
-      "00-Meta": "Documentation system metadata and guides",
-      "01-GameDesign": "Game mechanics and design specifications",
-      "02-TechnicalDesign": "Technical architecture and implementation",
-      "03-Assets": "Art, audio, and asset requirements",
-      "04-Reference": "Research, inspiration, and glossary"
+/**
+ * Experiments RPC Module
+ * 
+ * Handles user assignment to experiment cohorts with weighted distribution.
+ * Ensures deterministic assignment based on user ID.
+ */
+
+import {
+  GetExperimentAssignmentRequest,
+  GetExperimentAssignmentResponse,
+  ExperimentMetadata,
+  UserExperimentAssignment
+} from '../lib/types';
+import { 
+  validateExperimentId, 
+  toSqlLiteral, 
+  assignCohort,
+  safeJsonParse,
+  parseJsonbColumn
+} from '../lib/utils';
+
+/**
+ * RPC: GetExperimentAssignment
+ * 
+ * Gets the user's cohort assignment for a specific experiment.
+ * If user has no assignment yet, creates one based on weighted distribution.
+ * 
+ * @param ctx - Nakama context with userId
+ * @param logger - Logger instance
+ * @param nk - Nakama API
+ * @param payload - JSON string with experiment_id
+ * @returns JSON string with assignment result
+ */
+export const getExperimentAssignment: nkruntime.RpcFunction = function(
+  ctx: nkruntime.Context,
+  logger: nkruntime.Logger,
+  nk: nkruntime.Nakama,
+  payload: string
+): string {
+  try {
+    const request: GetExperimentAssignmentRequest = JSON.parse(payload);
+    const userId = request.user_id || ctx.userId;
+    const experimentId = request.experiment_id;
+
+    // Validate experiment ID
+    const validation = validateExperimentId(experimentId);
+    if (!validation.valid) {
+      return JSON.stringify({
+        success: false,
+        user_id: userId,
+        experiment_id: experimentId,
+        cohort: '',
+        is_new_assignment: false,
+        error: validation.error
+      } as GetExperimentAssignmentResponse);
     }
-  },
-  "documents": [
-    {
-      "id": "meta-readme",
-      "path": "00-Meta/README.md",
-      "title": "Documentation Overview",
-      "type": "meta",
-      "status": "approved",
-      "priority": "high",
-      "description": "Main documentation index and navigation"
-    },
-    {
-      "id": "meta-manifest",
-      "path": "00-Meta/MANIFEST.json",
-      "title": "Documentation Manifest",
-      "type": "meta",
-      "status": "approved",
-      "priority": "high",
-      "description": "Structured index for programmatic access"
-    },
-    {
-      "id": "meta-style",
-      "path": "00-Meta/STYLE_GUIDE.md",
-      "title": "Documentation Style Guide",
-      "type": "meta",
-      "status": "approved",
-      "priority": "medium",
-      "description": "Standards for writing documentation"
-    },
-    {
-      "id": "meta-workflow",
-      "path": "00-Meta/WORKFLOW.md",
-      "title": "Documentation Workflow",
-      "type": "meta",
-      "status": "approved",
-      "priority": "medium",
-      "description": "How to create and update documentation"
-    },
-    {
-      "id": "meta-agent",
-      "path": "00-Meta/AGENT_INGESTION.md",
-      "title": "Agent Ingestion Guide",
-      "type": "meta",
-      "status": "approved",
-      "priority": "high",
-      "description": "Guide for AI agents to parse and use documentation"
-    },
-    {
-      "id": "gdd-core",
-      "path": "01-GameDesign/GDD_Core.md",
-      "title": "Core Game Design Document",
-      "type": "game_design",
-      "status": "draft",
-      "priority": "critical",
-      "description": "High-level game concept and vision",
-      "dependencies": [],
-      "related": ["movement-system", "party-system", "combat-system"]
-    },
-    {
-      "id": "movement-system",
-      "path": "01-GameDesign/Movement_System.md",
-      "title": "Movement System Design",
-      "type": "game_design",
-      "status": "draft",
-      "priority": "critical",
-      "description": "Snake-like movement mechanic design",
-      "dependencies": ["gdd-core"],
-      "related": ["movement-impl", "player-impl"]
-    },
-    {
-      "id": "party-system",
-      "path": "01-GameDesign/Party_System.md",
-      "title": "Party System Design",
-      "type": "game_design",
-      "status": "draft",
-      "priority": "critical",
-      "description": "RPG party building and management",
-      "dependencies": ["gdd-core"],
-      "related": ["party-impl", "combat-system"]
-    },
-    {
-      "id": "combat-system",
-      "path": "01-GameDesign/Combat_System.md",
-      "title": "Combat System Design",
-      "type": "game_design",
-      "status": "draft",
-      "priority": "high",
-      "description": "Real-time combat mechanics",
-      "dependencies": ["gdd-core", "party-system"],
-      "related": ["combat-impl"]
-    },
-    {
-      "id": "enemy-design",
-      "path": "01-GameDesign/Enemy_Design.md",
-      "title": "Enemy Design",
-      "type": "game_design",
-      "status": "draft",
-      "priority": "high",
-      "description": "Enemy types, AI behaviors, and balancing",
-      "dependencies": ["combat-system"],
-      "related": ["enemy-impl"]
-    },
-    {
-      "id": "progression-system",
-      "path": "01-GameDesign/Progression_System.md",
-      "title": "Progression System",
-      "type": "game_design",
-      "status": "draft",
-      "priority": "medium",
-      "description": "Leveling, unlocks, and character growth",
-      "dependencies": ["party-system"],
-      "related": []
-    },
-    {
-      "id": "ui-ux",
-      "path": "01-GameDesign/UI_UX_Design.md",
-      "title": "UI/UX Design",
-      "type": "game_design",
-      "status": "draft",
-      "priority": "medium",
-      "description": "User interface and experience design",
-      "dependencies": ["gdd-core"],
-      "related": ["ui-impl"]
-    },
-    {
-      "id": "architecture",
-      "path": "02-TechnicalDesign/Architecture.md",
-      "title": "Technical Architecture",
-      "type": "technical",
-      "status": "draft",
-      "priority": "critical",
-      "description": "Overall system architecture and patterns",
-      "dependencies": ["gdd-core"],
-      "related": ["movement-impl", "party-impl", "combat-impl"]
-    },
-    {
-      "id": "movement-impl",
-      "path": "02-TechnicalDesign/Movement_Implementation.md",
-      "title": "Movement Implementation",
-      "type": "technical",
-      "status": "draft",
-      "priority": "critical",
-      "description": "Technical implementation of movement system",
-      "dependencies": ["architecture", "movement-system"],
-      "related": []
-    },
-    {
-      "id": "party-impl",
-      "path": "02-TechnicalDesign/Party_Implementation.md",
-      "title": "Party Implementation",
-      "type": "technical",
-      "status": "draft",
-      "priority": "critical",
-      "description": "Data structures and logic for party system",
-      "dependencies": ["architecture", "party-system"],
-      "related": []
-    },
-    {
-      "id": "combat-impl",
-      "path": "02-TechnicalDesign/Combat_Implementation.md",
-      "title": "Combat Implementation",
-      "type": "technical",
-      "status": "draft",
-      "priority": "high",
-      "description": "Technical combat system implementation",
-      "dependencies": ["architecture", "combat-system"],
-      "related": []
-    },
-    {
-      "id": "save-system",
-      "path": "02-TechnicalDesign/Save_System.md",
-      "title": "Save System",
-      "type": "technical",
-      "status": "draft",
-      "priority": "medium",
-      "description": "Persistence and save/load architecture",
-      "dependencies": ["architecture"],
-      "related": []
-    },
-    {
-      "id": "performance",
-      "path": "02-TechnicalDesign/Performance_Targets.md",
-      "title": "Performance Targets",
-      "type": "technical",
-      "status": "draft",
-      "priority": "medium",
-      "description": "Performance requirements and optimization",
-      "dependencies": ["architecture"],
-      "related": []
-    },
-    {
-      "id": "analytics-system",
-      "path": "02-TechnicalDesign/Analytics_System_Spec.md",
-      "title": "Analytics System Specification",
-      "type": "technical",
-      "status": "draft",
-      "priority": "high",
-      "description": "Event tracking, batching, and Nakama integration for analytics and A/B testing",
-      "dependencies": ["architecture", "game-manager-spec"],
-      "related": ["remote-config-system"]
-    },
-    {
-      "id": "remote-config-system",
-      "path": "02-TechnicalDesign/Remote_Config_System_Spec.md",
-      "title": "Remote Configuration System Specification",
-      "type": "technical",
-      "status": "draft",
-      "priority": "high",
-      "description": "Runtime config overrides from Nakama with type-safe access and fallback to defaults",
-      "dependencies": ["architecture", "game-manager-spec"],
-      "related": ["analytics-system"]
-    },
-    {
-      "id": "nakama-server",
-      "path": "02-TechnicalDesign/Nakama_Server_Spec.md",
-      "title": "Nakama Server Specification",
-      "type": "technical",
-      "status": "draft",
-      "priority": "high",
-      "description": "Backend server setup, RPC implementations, database schema, and deployment for analytics and remote config",
-      "dependencies": ["analytics-system", "remote-config-system"],
-      "related": []
-    },
-    {
-      "id": "art-direction",
-      "path": "03-Assets/Art_Direction.md",
-      "title": "Art Direction",
-      "type": "assets",
-      "status": "draft",
-      "priority": "high",
-      "description": "Visual style guide and art requirements",
-      "dependencies": ["gdd-core"],
-      "related": []
-    },
-    {
-      "id": "audio-direction",
-      "path": "03-Assets/Audio_Direction.md",
-      "title": "Audio Direction",
-      "type": "assets",
-      "status": "draft",
-      "priority": "medium",
-      "description": "Audio style and sound requirements",
-      "dependencies": ["gdd-core"],
-      "related": []
-    },
-    {
-      "id": "asset-lists",
-      "path": "03-Assets/Asset_Lists.md",
-      "title": "Asset Lists",
-      "type": "assets",
-      "status": "draft",
-      "priority": "medium",
-      "description": "Inventory of required assets",
-      "dependencies": ["art-direction", "audio-direction"],
-      "related": []
-    },
-    {
-      "id": "inspiration",
-      "path": "04-Reference/Inspiration.md",
-      "title": "Inspiration and References",
-      "type": "reference",
-      "status": "draft",
-      "priority": "low",
-      "description": "Reference games and mechanics",
-      "dependencies": [],
-      "related": []
-    },
-    {
-      "id": "research",
-      "path": "04-Reference/Research.md",
-      "title": "Research Notes",
-      "type": "reference",
-      "status": "draft",
-      "priority": "low",
-      "description": "Technical and design research",
-      "dependencies": [],
-      "related": []
-    },
-    {
-      "id": "glossary",
-      "path": "04-Reference/Glossary.md",
-      "title": "Glossary",
-      "type": "reference",
-      "status": "draft",
-      "priority": "medium",
-      "description": "Terms and definitions",
-      "dependencies": [],
-      "related": []
+
+    // Check if user already has assignment
+    const existingSql = `
+      SELECT cohort
+      FROM user_experiment_assignments
+      WHERE user_id = ${toSqlLiteral(userId)}
+        AND experiment_id = ${toSqlLiteral(experimentId)}
+      LIMIT 1
+    `;
+
+    const existingResult = nk.sqlQuery(existingSql);
+
+    if (existingResult.length > 0) {
+      // User already assigned
+      const cohort = existingResult[0].cohort;
+      logger.debug('User %s already assigned to cohort %s for experiment %s', userId, cohort, experimentId);
+
+      return JSON.stringify({
+        success: true,
+        user_id: userId,
+        experiment_id: experimentId,
+        cohort: cohort,
+        is_new_assignment: false
+      } as GetExperimentAssignmentResponse);
     }
-  ],
-  "categories": {
-    "meta": {
-      "name": "Meta Documentation",
-      "description": "Documentation system guides",
-      "count": 5
-    },
-    "game_design": {
-      "name": "Game Design",
-      "description": "Game mechanics and systems",
-      "count": 6
-    },
-    "technical": {
-      "name": "Technical Design",
-      "description": "Implementation specifications",
-      "count": 13
-    },
-    "assets": {
-      "name": "Assets",
-      "description": "Art and audio requirements",
-      "count": 3
-    },
-    "reference": {
-      "name": "Reference",
-      "description": "Research and glossary",
-      "count": 3
+
+    // Get experiment metadata
+    const metaSql = `
+      SELECT 
+        name,
+        is_active,
+        cohorts
+      FROM experiment_metadata
+      WHERE id = ${toSqlLiteral(experimentId)}
+      LIMIT 1
+    `;
+
+    const metaResult = nk.sqlQuery(metaSql);
+
+    if (metaResult.length === 0) {
+      logger.warn('Experiment not found: %s', experimentId);
+      return JSON.stringify({
+        success: false,
+        user_id: userId,
+        experiment_id: experimentId,
+        cohort: '',
+        is_new_assignment: false,
+        error: 'Experiment not found'
+      } as GetExperimentAssignmentResponse);
     }
-  },
-  "status_definitions": {
-    "draft": "Initial design, subject to change",
-    "in_review": "Being reviewed and refined",
-    "approved": "Design finalized, ready for implementation",
-    "implemented": "Code exists matching this design",
-    "deprecated": "No longer valid, kept for reference"
-  },
-  "priority_levels": {
-    "critical": "Must have for MVP",
-    "high": "Important for core gameplay",
-    "medium": "Enhances experience",
-    "low": "Nice to have"
+
+    const meta = metaResult[0];
+
+    if (!meta.is_active) {
+      logger.warn('Experiment is not active: %s', experimentId);
+      return JSON.stringify({
+        success: false,
+        user_id: userId,
+        experiment_id: experimentId,
+        cohort: '',
+        is_new_assignment: false,
+        error: 'Experiment is not active'
+      } as GetExperimentAssignmentResponse);
+    }
+
+    // Parse cohort distribution (handle JSONB byte arrays from Nakama)
+    const distribution: { [key: string]: number } = parseJsonbColumn(meta.cohorts, { control: 1.0 });
+
+    // Assign cohort deterministically
+    const cohort = assignCohort(userId, distribution);
+
+    // Save assignment
+    const insertSql = `
+      INSERT INTO user_experiment_assignments (user_id, experiment_id, cohort, assigned_at)
+      VALUES (
+        ${toSqlLiteral(userId)},
+        ${toSqlLiteral(experimentId)},
+        ${toSqlLiteral(cohort)},
+        NOW()
+      )
+    `;
+
+    try {
+      nk.sqlExec(insertSql);
+      logger.info('User %s assigned to cohort %s for experiment %s', userId, cohort, experimentId);
+
+      return JSON.stringify({
+        success: true,
+        user_id: userId,
+        experiment_id: experimentId,
+        cohort: cohort,
+        is_new_assignment: true
+      } as GetExperimentAssignmentResponse);
+
+    } catch (sqlError) {
+      logger.error('Failed to save experiment assignment: %s', sqlError);
+      return JSON.stringify({
+        success: false,
+        user_id: userId,
+        experiment_id: experimentId,
+        cohort: '',
+        is_new_assignment: false,
+        error: 'Failed to save assignment'
+      } as GetExperimentAssignmentResponse);
+    }
+
+  } catch (error) {
+    logger.error('Error in getExperimentAssignment: %s', error);
+    return JSON.stringify({
+      success: false,
+      user_id: '',
+      experiment_id: '',
+      cohort: '',
+      is_new_assignment: false,
+      error: 'Internal server error'
+    } as GetExperimentAssignmentResponse);
   }
-}
+};
+
+/**
+ * RPC: ListActiveExperiments
+ * 
+ * Lists all currently active experiments.
+ * Useful for admin tools or debug UI.
+ * 
+ * @param ctx - Nakama context
+ * @param logger - Logger instance
+ * @param nk - Nakama API
+ * @param payload - Empty or JSON with pagination params
+ * @returns JSON string with experiment list
+ */
+export const listActiveExperiments: nkruntime.RpcFunction = function(
+  ctx: nkruntime.Context,
+  logger: nkruntime.Logger,
+  nk: nkruntime.Nakama,
+  payload: string
+): string {
+  try {
+    const sql = `
+      SELECT 
+        id,
+        name,
+        description,
+        cohorts,
+        start_date,
+        end_date
+      FROM experiment_metadata
+      WHERE is_active = TRUE
+      ORDER BY start_date DESC
+    `;
+
+    const result = nk.sqlQuery(sql);
+
+    logger.info('Retrieved %d active experiments', result.length);
+
+    return JSON.stringify({
+      success: true,
+      experiments: result,
+      count: result.length
+    });
+
+  } catch (error) {
+    logger.error('Error in listActiveExperiments: %s', error);
+    return JSON.stringify({
+      success: false,
+      experiments: [],
+      error: 'Failed to list experiments'
+    });
+  }
+};

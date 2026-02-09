@@ -67,7 +67,114 @@ Changes to one feature don't recompile unrelated features.
 - **2D Tools**: Animation, Sprite Shape, Tilemap, Aseprite importer
 - **Input System**: New Input System (1.18.0) - use this, not legacy Input Manager
 - **URP**: Universal Render Pipeline (17.3.0) for 2D rendering
+- **Addressables**: Asynchronous asset loading (2.8.1)
+- **Localization**: Multi-language support (1.5.9)
 - **Test Framework**: Unity Test Framework for play/edit mode tests
+
+### Third-Party Plugins
+All plugins are in `Assets/Plugins/` - see `Documentation/02-TechnicalDesign/Plugins_And_Packages_Overview.md` for full details.
+
+#### Nakama Unity SDK (v3.21.0)
+Game server client for analytics, remote config, and A/B testing.
+```csharp
+// Already initialized in GameManager
+var analytics = ServiceLocator.Get<IAnalyticsManager>();
+analytics.RecordEvent("level_complete", new { level = 5 });
+
+var config = ServiceLocator.Get<IRemoteConfigManager>();
+await config.FetchConfig();
+```
+**Key Points**:
+- Server URL: `http://localhost:7350` (dev), change for production
+- Always authenticate before RPC calls
+- Use async/await pattern
+- Don't call RPCs in Update() (performance)
+
+#### PrimeTween (v1.3.7)
+High-performance, zero-allocation animation library.
+```csharp
+// Simple tween (one line, zero GC)
+Tween.Position(transform, endValue: Vector3.right * 5, duration: 1f);
+
+// UI fade with callback
+Tween.Alpha(canvasGroup, 0f, 0.5f)
+    .OnComplete(() => gameObject.SetActive(false));
+
+// Sequence
+Tween.Sequence()
+    .Append(Tween.Scale(logo, 1.2f, 0.3f))
+    .Append(Tween.Rotation(logo, new Vector3(0, 0, 360), 0.5f));
+```
+**Key Points**:
+- Zero GC allocations (use for performance-critical animations)
+- Store Tween reference to control/stop: `Tween tween = Tween.Position(...);`
+- Use `useUnscaledTime: true` for UI (unaffected by pause)
+- Don't tween physics-controlled properties
+
+#### TransitionsPlus (v5.1.1)
+Full-screen transition effects for scene changes.
+```csharp
+// Simple fade transition
+TransitionAnimator.Start(TransitionProfile.Fade, duration: 1f);
+
+// With callback
+TransitionAnimator.Start(
+    effect: TransitionProfile.Effect.Wipe,
+    duration: 1.5f,
+    onComplete: () => SceneManager.LoadScene("GameplayScene")
+);
+```
+**Key Points**:
+- Use for scene transitions, death screens, zone changes
+- Don't start multiple transitions simultaneously
+- Simpler effects (Fade, Wipe) better for mobile performance
+
+#### IngameDebugConsole (v1.8.4)
+Runtime debug console for device testing.
+```csharp
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+using IngameDebugConsole;
+
+[ConsoleMethod("give_gold", "Adds gold to player")]
+public static void GiveGold(int amount)
+{
+    PlayerInventory.Gold += amount;
+}
+#endif
+```
+**Key Points**:
+- Include in development builds only
+- Register useful debug commands for QA
+- Don't ship in production (security risk)
+
+#### UniTask (v2.5.10)
+Efficient async/await library for Unity (zero allocation).
+```csharp
+using Cysharp.Threading.Tasks;
+
+// Replace Task with UniTask (zero GC)
+public async UniTask<string> LoadDataAsync()
+{
+    await UniTask.Delay(1000); // No allocation
+    return "data";
+}
+
+// Unity-specific awaits
+await UniTask.WaitForEndOfFrame();
+await UniTask.NextFrame();
+
+// Convert Nakama Task to UniTask
+var result = await client.RpcAsync(session, rpcId, payload).AsUniTask();
+
+// Fire-and-forget with error handling
+LoadSceneAsync().Forget(ex => Debug.LogError(ex));
+```
+**Key Points**:
+- Use instead of Task for Unity operations (zero GC, 2-10x faster)
+- Always pass CancellationToken: `this.GetCancellationTokenOnDestroy()`
+- Use `.Forget()` for fire-and-forget tasks
+- Convert Nakama/external Task with `.AsUniTask()`
+- Use UniTask Tracker window to debug leaked tasks
 
 ### Solution File
 Use `OCTP.slnx` (configured in `.vscode/settings.json` as dotnet.defaultSolution).

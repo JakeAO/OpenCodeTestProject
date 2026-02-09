@@ -635,10 +635,19 @@ public void TestInputContext_SafeZoneBlocksAbilities()
 
 ## Open Questions
 
-- Should there be intermediate states? (e.g., DialogClosing before returning to previous state)
-- Should pause be re-entrant? (Pause while paused?)
-- Should there be tutorial state that blocks certain transitions?
-- Should state changes have transition animations/delays?
+All questions below have been resolved in v1.1:
+
+- ✅ **Should there be intermediate states? (e.g., DialogClosing before returning to previous state)**  
+  RESOLVED: Yes, added 3 intermediate states (DialogClosing, SafeZoneClosing, TransitionLoading) for smooth animation chains
+
+- ✅ **Should pause be re-entrant? (Pause while paused?)**  
+  RESOLVED: No, single pause level only (attempting to pause while paused does nothing)
+
+- ✅ **Should there be tutorial state that blocks certain transitions?**  
+  RESOLVED: No dedicated tutorial state; use progressive hints in early zones instead
+
+- ✅ **Should state changes have transition animations/delays?**  
+  RESOLVED: Yes, all state changes have 1-second slide transitions (500ms exit + 500ms entry)
 
 ## Changelog
 

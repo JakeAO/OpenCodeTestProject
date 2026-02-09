@@ -525,10 +525,19 @@ public IEnumerator TestUITransition_ExplorationToPause()
 
 ## Open Questions
 
-- Should loading bar show actual progress or estimated?
-- Should scenes preload asynchronously in background before player requests?
-- Should there be fade transitions between scenes?
-- Should scene transitions have timeout limits?
+All questions below have been resolved in v1.1:
+
+- ✅ **Should loading bar show actual progress or estimated?**  
+  RESOLVED: Animated progress bar with estimated duration (see Loading Screen UI section)
+
+- ✅ **Should scenes preload asynchronously in background before player requests?**  
+  RESOLVED: Yes, next zone preloads in background during exploration (see Background Preloading section)
+
+- ✅ **Should there be fade transitions between scenes?**  
+  RESOLVED: Yes, fade + slide effect for all transitions, 1s total duration (see Transition Animations section)
+
+- ✅ **Should scene transitions have timeout limits?**  
+  RESOLVED: Yes, 30-second timeout with graceful error handling (see Timeout Handling section)
 
 ## Changelog
 

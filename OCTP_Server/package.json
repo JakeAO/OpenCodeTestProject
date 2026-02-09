@@ -1,0 +1,28 @@
+{
+  "name": "octp-nakama-server",
+  "version": "1.0.0",
+  "description": "OCTP Nakama server runtime with analytics and remote config support",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "tsc",
+    "bundle": "node scripts/bundle.js",
+    "watch": "tsc --watch",
+    "clean": "rm -rf build modules",
+    "copy": "cp build/index.js modules/index.js",
+    "deploy": "npm run clean && npm run build && npm run bundle",
+    "dev": "npm run watch"
+  },
+  "keywords": [
+    "nakama",
+    "game-server",
+    "analytics",
+    "remote-config"
+  ],
+  "author": "OCTP Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {}
+}

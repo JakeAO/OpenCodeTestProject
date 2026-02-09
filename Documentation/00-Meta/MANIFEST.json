@@ -73,7 +73,11 @@
       "priority": "critical",
       "description": "High-level game concept and vision",
       "dependencies": [],
-      "related": ["movement-system", "party-system", "combat-system"]
+      "related": [
+        "movement-system",
+        "party-system",
+        "combat-system"
+      ]
     },
     {
       "id": "movement-system",
@@ -83,8 +87,13 @@
       "status": "draft",
       "priority": "critical",
       "description": "Snake-like movement mechanic design",
-      "dependencies": ["gdd-core"],
-      "related": ["movement-impl", "player-impl"]
+      "dependencies": [
+        "gdd-core"
+      ],
+      "related": [
+        "movement-impl",
+        "player-impl"
+      ]
     },
     {
       "id": "party-system",
@@ -94,8 +103,13 @@
       "status": "draft",
       "priority": "critical",
       "description": "RPG party building and management",
-      "dependencies": ["gdd-core"],
-      "related": ["party-impl", "combat-system"]
+      "dependencies": [
+        "gdd-core"
+      ],
+      "related": [
+        "party-impl",
+        "combat-system"
+      ]
     },
     {
       "id": "combat-system",
@@ -105,8 +119,13 @@
       "status": "draft",
       "priority": "high",
       "description": "Real-time combat mechanics",
-      "dependencies": ["gdd-core", "party-system"],
-      "related": ["combat-impl"]
+      "dependencies": [
+        "gdd-core",
+        "party-system"
+      ],
+      "related": [
+        "combat-impl"
+      ]
     },
     {
       "id": "enemy-design",
@@ -116,8 +135,12 @@
       "status": "draft",
       "priority": "high",
       "description": "Enemy types, AI behaviors, and balancing",
-      "dependencies": ["combat-system"],
-      "related": ["enemy-impl"]
+      "dependencies": [
+        "combat-system"
+      ],
+      "related": [
+        "enemy-impl"
+      ]
     },
     {
       "id": "progression-system",
@@ -127,7 +150,9 @@
       "status": "draft",
       "priority": "medium",
       "description": "Leveling, unlocks, and character growth",
-      "dependencies": ["party-system"],
+      "dependencies": [
+        "party-system"
+      ],
       "related": []
     },
     {
@@ -138,8 +163,12 @@
       "status": "draft",
       "priority": "medium",
       "description": "User interface and experience design",
-      "dependencies": ["gdd-core"],
-      "related": ["ui-impl"]
+      "dependencies": [
+        "gdd-core"
+      ],
+      "related": [
+        "ui-impl"
+      ]
     },
     {
       "id": "architecture",
@@ -149,8 +178,14 @@
       "status": "draft",
       "priority": "critical",
       "description": "Overall system architecture and patterns",
-      "dependencies": ["gdd-core"],
-      "related": ["movement-impl", "party-impl", "combat-impl"]
+      "dependencies": [
+        "gdd-core"
+      ],
+      "related": [
+        "movement-impl",
+        "party-impl",
+        "combat-impl"
+      ]
     },
     {
       "id": "movement-impl",
@@ -160,7 +195,10 @@
       "status": "draft",
       "priority": "critical",
       "description": "Technical implementation of movement system",
-      "dependencies": ["architecture", "movement-system"],
+      "dependencies": [
+        "architecture",
+        "movement-system"
+      ],
       "related": []
     },
     {
@@ -171,7 +209,10 @@
       "status": "draft",
       "priority": "critical",
       "description": "Data structures and logic for party system",
-      "dependencies": ["architecture", "party-system"],
+      "dependencies": [
+        "architecture",
+        "party-system"
+      ],
       "related": []
     },
     {
@@ -182,7 +223,10 @@
       "status": "draft",
       "priority": "high",
       "description": "Technical combat system implementation",
-      "dependencies": ["architecture", "combat-system"],
+      "dependencies": [
+        "architecture",
+        "combat-system"
+      ],
       "related": []
     },
     {
@@ -193,7 +237,9 @@
       "status": "draft",
       "priority": "medium",
       "description": "Persistence and save/load architecture",
-      "dependencies": ["architecture"],
+      "dependencies": [
+        "architecture"
+      ],
       "related": []
     },
     {
@@ -204,7 +250,9 @@
       "status": "draft",
       "priority": "medium",
       "description": "Performance requirements and optimization",
-      "dependencies": ["architecture"],
+      "dependencies": [
+        "architecture"
+      ],
       "related": []
     },
     {
@@ -215,8 +263,13 @@
       "status": "draft",
       "priority": "high",
       "description": "Event tracking, batching, and Nakama integration for analytics and A/B testing",
-      "dependencies": ["architecture", "game-manager-spec"],
-      "related": ["remote-config-system"]
+      "dependencies": [
+        "architecture",
+        "game-manager-spec"
+      ],
+      "related": [
+        "remote-config-system"
+      ]
     },
     {
       "id": "remote-config-system",
@@ -226,18 +279,26 @@
       "status": "draft",
       "priority": "high",
       "description": "Runtime config overrides from Nakama with type-safe access and fallback to defaults",
-      "dependencies": ["architecture", "game-manager-spec"],
-      "related": ["analytics-system"]
+      "dependencies": [
+        "architecture",
+        "game-manager-spec"
+      ],
+      "related": [
+        "analytics-system"
+      ]
     },
     {
       "id": "nakama-server",
       "path": "02-TechnicalDesign/Nakama_Server_Spec.md",
       "title": "Nakama Server Specification",
       "type": "technical",
-      "status": "draft",
+      "status": "implemented",
       "priority": "high",
       "description": "Backend server setup, RPC implementations, database schema, and deployment for analytics and remote config",
-      "dependencies": ["analytics-system", "remote-config-system"],
+      "dependencies": [
+        "analytics-system",
+        "remote-config-system"
+      ],
       "related": []
     },
     {
@@ -248,7 +309,9 @@
       "status": "draft",
       "priority": "high",
       "description": "Visual style guide and art requirements",
-      "dependencies": ["gdd-core"],
+      "dependencies": [
+        "gdd-core"
+      ],
       "related": []
     },
     {
@@ -259,7 +322,9 @@
       "status": "draft",
       "priority": "medium",
       "description": "Audio style and sound requirements",
-      "dependencies": ["gdd-core"],
+      "dependencies": [
+        "gdd-core"
+      ],
       "related": []
     },
     {
@@ -270,7 +335,10 @@
       "status": "draft",
       "priority": "medium",
       "description": "Inventory of required assets",
-      "dependencies": ["art-direction", "audio-direction"],
+      "dependencies": [
+        "art-direction",
+        "audio-direction"
+      ],
       "related": []
     },
     {
@@ -305,6 +373,21 @@
       "description": "Terms and definitions",
       "dependencies": [],
       "related": []
+    },
+    {
+      "id": "plugins-packages",
+      "path": "02-TechnicalDesign/Plugins_And_Packages_Overview.md",
+      "title": "Plugins and Packages Overview",
+      "type": "technical",
+      "status": "approved",
+      "priority": "high",
+      "description": "Catalog of all third-party plugins (Nakama, PrimeTween, TransitionsPlus, IngameDebugConsole) and Unity packages with versions, usage guidelines, and best practices",
+      "dependencies": [],
+      "related": [
+        "nakama-server",
+        "scene-management",
+        "state-management"
+      ]
     }
   ],
   "categories": {
@@ -346,5 +429,32 @@
     "high": "Important for core gameplay",
     "medium": "Enhances experience",
     "low": "Nice to have"
+  },
+  "statistics": {
+    "meta": {
+      "name": "Meta Documentation",
+      "description": "Documentation system metadata and guides",
+      "count": 5
+    },
+    "game_design": {
+      "name": "Game Design",
+      "description": "Game mechanics and design specifications",
+      "count": 4
+    },
+    "technical": {
+      "name": "Technical Design",
+      "description": "Implementation specifications",
+      "count": 15
+    },
+    "assets": {
+      "name": "Assets",
+      "description": "Art and audio requirements",
+      "count": 3
+    },
+    "reference": {
+      "name": "Reference",
+      "description": "Research and glossary",
+      "count": 3
+    }
   }
 }

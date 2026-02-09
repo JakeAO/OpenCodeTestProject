@@ -1,350 +1,81 @@
-{
-  "project": {
-    "name": "OCTP",
-    "fullName": "OpenCodeTestProject",
-    "type": "Unity 2D Game",
-    "version": "1.0.0",
-    "unity_version": "6000.3.7f1",
-    "description": "Top-down real-time game with snake-like movement and RPG party-building"
-  },
-  "documentation": {
-    "version": "1.0",
-    "last_updated": "2026-02-08",
-    "structure": {
-      "00-Meta": "Documentation system metadata and guides",
-      "01-GameDesign": "Game mechanics and design specifications",
-      "02-TechnicalDesign": "Technical architecture and implementation",
-      "03-Assets": "Art, audio, and asset requirements",
-      "04-Reference": "Research, inspiration, and glossary"
-    }
-  },
-  "documents": [
-    {
-      "id": "meta-readme",
-      "path": "00-Meta/README.md",
-      "title": "Documentation Overview",
-      "type": "meta",
-      "status": "approved",
-      "priority": "high",
-      "description": "Main documentation index and navigation"
-    },
-    {
-      "id": "meta-manifest",
-      "path": "00-Meta/MANIFEST.json",
-      "title": "Documentation Manifest",
-      "type": "meta",
-      "status": "approved",
-      "priority": "high",
-      "description": "Structured index for programmatic access"
-    },
-    {
-      "id": "meta-style",
-      "path": "00-Meta/STYLE_GUIDE.md",
-      "title": "Documentation Style Guide",
-      "type": "meta",
-      "status": "approved",
-      "priority": "medium",
-      "description": "Standards for writing documentation"
-    },
-    {
-      "id": "meta-workflow",
-      "path": "00-Meta/WORKFLOW.md",
-      "title": "Documentation Workflow",
-      "type": "meta",
-      "status": "approved",
-      "priority": "medium",
-      "description": "How to create and update documentation"
-    },
-    {
-      "id": "meta-agent",
-      "path": "00-Meta/AGENT_INGESTION.md",
-      "title": "Agent Ingestion Guide",
-      "type": "meta",
-      "status": "approved",
-      "priority": "high",
-      "description": "Guide for AI agents to parse and use documentation"
-    },
-    {
-      "id": "gdd-core",
-      "path": "01-GameDesign/GDD_Core.md",
-      "title": "Core Game Design Document",
-      "type": "game_design",
-      "status": "draft",
-      "priority": "critical",
-      "description": "High-level game concept and vision",
-      "dependencies": [],
-      "related": ["movement-system", "party-system", "combat-system"]
-    },
-    {
-      "id": "movement-system",
-      "path": "01-GameDesign/Movement_System.md",
-      "title": "Movement System Design",
-      "type": "game_design",
-      "status": "draft",
-      "priority": "critical",
-      "description": "Snake-like movement mechanic design",
-      "dependencies": ["gdd-core"],
-      "related": ["movement-impl", "player-impl"]
-    },
-    {
-      "id": "party-system",
-      "path": "01-GameDesign/Party_System.md",
-      "title": "Party System Design",
-      "type": "game_design",
-      "status": "draft",
-      "priority": "critical",
-      "description": "RPG party building and management",
-      "dependencies": ["gdd-core"],
-      "related": ["party-impl", "combat-system"]
-    },
-    {
-      "id": "combat-system",
-      "path": "01-GameDesign/Combat_System.md",
-      "title": "Combat System Design",
-      "type": "game_design",
-      "status": "draft",
-      "priority": "high",
-      "description": "Real-time combat mechanics",
-      "dependencies": ["gdd-core", "party-system"],
-      "related": ["combat-impl"]
-    },
-    {
-      "id": "enemy-design",
-      "path": "01-GameDesign/Enemy_Design.md",
-      "title": "Enemy Design",
-      "type": "game_design",
-      "status": "draft",
-      "priority": "high",
-      "description": "Enemy types, AI behaviors, and balancing",
-      "dependencies": ["combat-system"],
-      "related": ["enemy-impl"]
-    },
-    {
-      "id": "progression-system",
-      "path": "01-GameDesign/Progression_System.md",
-      "title": "Progression System",
-      "type": "game_design",
-      "status": "draft",
-      "priority": "medium",
-      "description": "Leveling, unlocks, and character growth",
-      "dependencies": ["party-system"],
-      "related": []
-    },
-    {
-      "id": "ui-ux",
-      "path": "01-GameDesign/UI_UX_Design.md",
-      "title": "UI/UX Design",
-      "type": "game_design",
-      "status": "draft",
-      "priority": "medium",
-      "description": "User interface and experience design",
-      "dependencies": ["gdd-core"],
-      "related": ["ui-impl"]
-    },
-    {
-      "id": "architecture",
-      "path": "02-TechnicalDesign/Architecture.md",
-      "title": "Technical Architecture",
-      "type": "technical",
-      "status": "draft",
-      "priority": "critical",
-      "description": "Overall system architecture and patterns",
-      "dependencies": ["gdd-core"],
-      "related": ["movement-impl", "party-impl", "combat-impl"]
-    },
-    {
-      "id": "movement-impl",
-      "path": "02-TechnicalDesign/Movement_Implementation.md",
-      "title": "Movement Implementation",
-      "type": "technical",
-      "status": "draft",
-      "priority": "critical",
-      "description": "Technical implementation of movement system",
-      "dependencies": ["architecture", "movement-system"],
-      "related": []
-    },
-    {
-      "id": "party-impl",
-      "path": "02-TechnicalDesign/Party_Implementation.md",
-      "title": "Party Implementation",
-      "type": "technical",
-      "status": "draft",
-      "priority": "critical",
-      "description": "Data structures and logic for party system",
-      "dependencies": ["architecture", "party-system"],
-      "related": []
-    },
-    {
-      "id": "combat-impl",
-      "path": "02-TechnicalDesign/Combat_Implementation.md",
-      "title": "Combat Implementation",
-      "type": "technical",
-      "status": "draft",
-      "priority": "high",
-      "description": "Technical combat system implementation",
-      "dependencies": ["architecture", "combat-system"],
-      "related": []
-    },
-    {
-      "id": "save-system",
-      "path": "02-TechnicalDesign/Save_System.md",
-      "title": "Save System",
-      "type": "technical",
-      "status": "draft",
-      "priority": "medium",
-      "description": "Persistence and save/load architecture",
-      "dependencies": ["architecture"],
-      "related": []
-    },
-    {
-      "id": "performance",
-      "path": "02-TechnicalDesign/Performance_Targets.md",
-      "title": "Performance Targets",
-      "type": "technical",
-      "status": "draft",
-      "priority": "medium",
-      "description": "Performance requirements and optimization",
-      "dependencies": ["architecture"],
-      "related": []
-    },
-    {
-      "id": "analytics-system",
-      "path": "02-TechnicalDesign/Analytics_System_Spec.md",
-      "title": "Analytics System Specification",
-      "type": "technical",
-      "status": "draft",
-      "priority": "high",
-      "description": "Event tracking, batching, and Nakama integration for analytics and A/B testing",
-      "dependencies": ["architecture", "game-manager-spec"],
-      "related": ["remote-config-system"]
-    },
-    {
-      "id": "remote-config-system",
-      "path": "02-TechnicalDesign/Remote_Config_System_Spec.md",
-      "title": "Remote Configuration System Specification",
-      "type": "technical",
-      "status": "draft",
-      "priority": "high",
-      "description": "Runtime config overrides from Nakama with type-safe access and fallback to defaults",
-      "dependencies": ["architecture", "game-manager-spec"],
-      "related": ["analytics-system"]
-    },
-    {
-      "id": "nakama-server",
-      "path": "02-TechnicalDesign/Nakama_Server_Spec.md",
-      "title": "Nakama Server Specification",
-      "type": "technical",
-      "status": "draft",
-      "priority": "high",
-      "description": "Backend server setup, RPC implementations, database schema, and deployment for analytics and remote config",
-      "dependencies": ["analytics-system", "remote-config-system"],
-      "related": []
-    },
-    {
-      "id": "art-direction",
-      "path": "03-Assets/Art_Direction.md",
-      "title": "Art Direction",
-      "type": "assets",
-      "status": "draft",
-      "priority": "high",
-      "description": "Visual style guide and art requirements",
-      "dependencies": ["gdd-core"],
-      "related": []
-    },
-    {
-      "id": "audio-direction",
-      "path": "03-Assets/Audio_Direction.md",
-      "title": "Audio Direction",
-      "type": "assets",
-      "status": "draft",
-      "priority": "medium",
-      "description": "Audio style and sound requirements",
-      "dependencies": ["gdd-core"],
-      "related": []
-    },
-    {
-      "id": "asset-lists",
-      "path": "03-Assets/Asset_Lists.md",
-      "title": "Asset Lists",
-      "type": "assets",
-      "status": "draft",
-      "priority": "medium",
-      "description": "Inventory of required assets",
-      "dependencies": ["art-direction", "audio-direction"],
-      "related": []
-    },
-    {
-      "id": "inspiration",
-      "path": "04-Reference/Inspiration.md",
-      "title": "Inspiration and References",
-      "type": "reference",
-      "status": "draft",
-      "priority": "low",
-      "description": "Reference games and mechanics",
-      "dependencies": [],
-      "related": []
-    },
-    {
-      "id": "research",
-      "path": "04-Reference/Research.md",
-      "title": "Research Notes",
-      "type": "reference",
-      "status": "draft",
-      "priority": "low",
-      "description": "Technical and design research",
-      "dependencies": [],
-      "related": []
-    },
-    {
-      "id": "glossary",
-      "path": "04-Reference/Glossary.md",
-      "title": "Glossary",
-      "type": "reference",
-      "status": "draft",
-      "priority": "medium",
-      "description": "Terms and definitions",
-      "dependencies": [],
-      "related": []
-    }
-  ],
-  "categories": {
-    "meta": {
-      "name": "Meta Documentation",
-      "description": "Documentation system guides",
-      "count": 5
-    },
-    "game_design": {
-      "name": "Game Design",
-      "description": "Game mechanics and systems",
-      "count": 6
-    },
-    "technical": {
-      "name": "Technical Design",
-      "description": "Implementation specifications",
-      "count": 13
-    },
-    "assets": {
-      "name": "Assets",
-      "description": "Art and audio requirements",
-      "count": 3
-    },
-    "reference": {
-      "name": "Reference",
-      "description": "Research and glossary",
-      "count": 3
-    }
-  },
-  "status_definitions": {
-    "draft": "Initial design, subject to change",
-    "in_review": "Being reviewed and refined",
-    "approved": "Design finalized, ready for implementation",
-    "implemented": "Code exists matching this design",
-    "deprecated": "No longer valid, kept for reference"
-  },
-  "priority_levels": {
-    "critical": "Must have for MVP",
-    "high": "Important for core gameplay",
-    "medium": "Enhances experience",
-    "low": "Nice to have"
-  }
-}
+-- Migration 001: Create initial tables for OCTP analytics, config, and experiments
+-- Created: 2026-02-09
+-- Description: Sets up the core database schema for Nakama server modules
+
+-- ============================================================================
+-- ANALYTICS TABLES
+-- ============================================================================
+
+-- Store all analytics events with JSONB properties for flexibility
+CREATE TABLE IF NOT EXISTS analytics_events (
+    id BIGSERIAL PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL,
+    session_id VARCHAR(255),
+    event_name VARCHAR(255) NOT NULL,
+    event_properties JSONB DEFAULT '{}'::jsonb,
+    experiment_id VARCHAR(255),
+    cohort VARCHAR(255),
+    client_timestamp BIGINT,
+    server_timestamp BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW())::BIGINT * 1000,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================================================
+-- REMOTE CONFIG TABLES
+-- ============================================================================
+
+-- Store config variants for different experiment cohorts
+CREATE TABLE IF NOT EXISTS config_variants (
+    id SERIAL PRIMARY KEY,
+    experiment_id VARCHAR(255) NOT NULL,
+    cohort VARCHAR(255) NOT NULL,
+    config_data JSONB NOT NULL DEFAULT '{}'::jsonb,
+    version INTEGER NOT NULL DEFAULT 1,
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(experiment_id, cohort)
+);
+
+-- ============================================================================
+-- A/B TESTING / EXPERIMENT TABLES
+-- ============================================================================
+
+-- Store experiment metadata and cohort definitions
+CREATE TABLE IF NOT EXISTS experiment_metadata (
+    id VARCHAR(255) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    cohorts JSONB NOT NULL, -- {"control": 0.5, "variant_b": 0.5}
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    start_date TIMESTAMP WITH TIME ZONE,
+    end_date TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Store user-to-experiment-cohort assignments
+CREATE TABLE IF NOT EXISTS user_experiment_assignments (
+    id BIGSERIAL PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL,
+    experiment_id VARCHAR(255) NOT NULL,
+    cohort VARCHAR(255) NOT NULL,
+    assigned_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(user_id, experiment_id),
+    FOREIGN KEY (experiment_id) REFERENCES experiment_metadata(id) ON DELETE CASCADE
+);
+
+-- ============================================================================
+-- COMMENTS AND DOCUMENTATION
+-- ============================================================================
+
+COMMENT ON TABLE analytics_events IS 'Stores all analytics events from Unity client with flexible JSONB properties';
+COMMENT ON TABLE config_variants IS 'Stores remote config variants per experiment/cohort combination';
+COMMENT ON TABLE experiment_metadata IS 'Defines active A/B tests with cohort distributions';
+COMMENT ON TABLE user_experiment_assignments IS 'Tracks which cohort each user is assigned to for each experiment';
+
+COMMENT ON COLUMN analytics_events.event_properties IS 'Arbitrary JSON data for each event (e.g., {"level": 5, "score": 1000})';
+COMMENT ON COLUMN analytics_events.client_timestamp IS 'Timestamp from client in milliseconds since epoch';
+COMMENT ON COLUMN analytics_events.server_timestamp IS 'Server-side timestamp in milliseconds since epoch';
+COMMENT ON COLUMN config_variants.config_data IS 'JSON configuration data specific to this cohort';
+COMMENT ON COLUMN experiment_metadata.cohorts IS 'Cohort names and weights as JSON object';
