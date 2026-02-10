@@ -8,7 +8,7 @@
     "description": "Top-down real-time game with snake-like movement and RPG party-building"
   },
   "documentation": {
-    "version": "1.1",
+    "version": "1.2",
     "last_updated": "2026-02-09",
     "structure": {
       "00-Meta": "Documentation system metadata and guides",
@@ -388,6 +388,25 @@
         "scene-management",
         "state-management"
       ]
+    },
+    {
+      "id": "network-manager",
+      "path": "02-TechnicalDesign/Network_Manager_Spec.md",
+      "title": "Network Manager System Specification",
+      "type": "technical",
+      "status": "draft",
+      "priority": "high",
+      "description": "Multi-environment Nakama connection management with compiler flag and runtime switching support, debug console integration",
+      "dependencies": [
+        "architecture",
+        "game-manager-spec",
+        "nakama-server"
+      ],
+      "related": [
+        "analytics-system",
+        "remote-config-system",
+        "plugins-packages"
+      ]
     }
   ],
   "categories": {
@@ -444,7 +463,7 @@
     "technical": {
       "name": "Technical Design",
       "description": "Implementation specifications",
-      "count": 15
+      "count": 16
     },
     "assets": {
       "name": "Assets",

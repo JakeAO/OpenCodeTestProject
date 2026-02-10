@@ -3,10 +3,10 @@
 ## Metadata
 - **Type**: Technical Reference
 - **Status**: Active
-- **Version**: 1.1
+- **Version**: 1.2
 - **Last Updated**: 2026-02-09
 - **Owner**: OCTP Team
-- **Related Docs**: Nakama_Server_Spec.md, Scene_Management_Spec.md, State_Management_Spec.md
+- **Related Docs**: Nakama_Server_Spec.md, Scene_Management_Spec.md, State_Management_Spec.md, Network_Manager_Spec.md
 
 ## Overview
 
@@ -502,6 +502,177 @@ public Task<string> FetchDataAsTask()
 
 ---
 
+## Core Systems
+
+### NetworkManager
+
+**Version**: 1.0  
+**Location**: `Assets/_Project/Core/Scripts/Network/`  
+**Type**: Core System (not a plugin)  
+**Specification**: [Network_Manager_Spec.md](./Network_Manager_Spec.md)
+
+**Purpose**:
+- Environment-aware Nakama server connection management
+- Support for Local, Development, Staging, and Production environments
+- Runtime environment switching with persistent configuration
+- Compiler flag integration for build-time environment selection
+
+**Key Features**:
+- **Multi-Environment Support**: Seamlessly switch between local dev server, shared dev, staging, and production
+- **Compiler Flags**: Use `NETWORK_LOCAL`, `NETWORK_DEV`, `NETWORK_STAGING`, `NETWORK_PRODUCTION` for build-time configuration
+- **Runtime Switching**: Change environments via debug console without rebuilding
+- **Persistent Settings**: Environment overrides saved in PlayerPrefs across sessions
+- **Debug Console Integration**: In-game commands for environment management (`network_status`, `network_switch`)
+- **Automatic Defaults**: Local in Editor, Production in builds (unless overridden)
+
+**Integration Points**:
+- Service Locator: `ServiceLocator.Get<INetworkManager>()`
+- Used by Nakama client initialization
+- AnalyticsManager and RemoteConfigManager use NetworkManager for server URLs
+- Debug console commands for QA testing
+
+**Usage Example**:
+```csharp
+// Get network configuration
+var networkManager = ServiceLocator.Get<INetworkManager>();
+string serverUrl = networkManager.FullServerUrl;  // "http://localhost:7350" or "https://api.example.com:443"
+string httpKey = networkManager.HttpKey;
+NetworkEnvironment env = networkManager.CurrentEnvironment;
+
+// Initialize Nakama client with NetworkManager config
+var client = new Nakama.Client(
+    scheme: networkManager.UseSSL ? "https" : "http",
+    host: networkManager.ServerUrl,
+    port: networkManager.ServerPort,
+    serverKey: networkManager.HttpKey
+);
+
+// Listen for environment changes
+networkManager.OnEnvironmentChanged += (newEnv) => {
+    Debug.Log($"Environment changed to {newEnv}. Restart required.");
+};
+
+// Runtime environment switching (requires restart)
+networkManager.SetEnvironment(NetworkEnvironment.Staging);
+networkManager.RequestReload();
+
+// Clear override to revert to compiler flag default
+if (networkManager.HasEnvironmentOverride) {
+    networkManager.ClearEnvironmentOverride();
+    networkManager.RequestReload();
+}
+```
+
+**Debug Console Commands**:
+```bash
+# Show current environment and configuration
+network_status
+
+# Switch to different environment (requires restart)
+network_switch development
+network_switch staging
+network_switch production
+network_switch local
+
+# Reload application to apply changes
+network_reload
+
+# Clear environment override (revert to compiler flag)
+network_clear_override
+```
+
+**Best Practices**:
+- ✅ Use NetworkManager for all server URL/key access (single source of truth)
+- ✅ Set compiler flags in Build Settings → Scripting Define Symbols
+- ✅ Test environment switching before deploying to production
+- ✅ Use debug console for QA testing on different environments
+- ✅ Clear overrides before production builds to ensure defaults work
+- ❌ Don't hardcode server URLs or keys in code
+- ❌ Don't forget to restart after environment changes (config doesn't hot-reload)
+- ❌ Don't ship development credentials in production builds
+
+**Compiler Flag Setup**:
+```
+// Edit → Project Settings → Player → Scripting Define Symbols
+
+// Development build with staging server
+NETWORK_STAGING;DEVELOPMENT_BUILD
+
+// Production build (no flag = auto-detects Production in builds)
+(empty or NETWORK_PRODUCTION)
+
+// Local development (default in editor)
+NETWORK_LOCAL
+```
+
+**Files**:
+- `NetworkManager.cs` (217 lines) - Main manager implementation
+- `INetworkManager.cs` (177 lines) - Interface definition
+- `NetworkConfig.cs` (103 lines) - ScriptableObject config
+- `NetworkEndpointConfig.cs` (113 lines) - Endpoint configuration data
+- `NetworkEnvironment.cs` (33 lines) - Environment enum
+- `NetworkDebugCommands.cs` (202 lines) - Debug console commands
+- **Total**: 845 lines of production code
+- **Tests**: `NetworkManagerTests.cs` (580 lines, 28 test cases)
+
+**Common Patterns**:
+```csharp
+// Pattern 1: Initialize Nakama with NetworkManager
+public class NakamaService
+{
+    private IClient _client;
+    
+    public void Initialize()
+    {
+        var netManager = ServiceLocator.Get<INetworkManager>();
+        _client = new Client(
+            scheme: netManager.UseSSL ? "https" : "http",
+            host: netManager.ServerUrl,
+            port: netManager.ServerPort,
+            serverKey: netManager.HttpKey
+        );
+    }
+}
+
+// Pattern 2: Environment-specific behavior
+public class AnalyticsManager
+{
+    public void RecordEvent(string eventName)
+    {
+        var netManager = ServiceLocator.Get<INetworkManager>();
+        
+        // Disable analytics in local environment
+        if (netManager.CurrentEnvironment == NetworkEnvironment.Local)
+        {
+            Debug.Log($"[Local] Skipping analytics: {eventName}");
+            return;
+        }
+        
+        // Send to server for other environments
+        SendToServer(eventName);
+    }
+}
+
+// Pattern 3: Environment change notification
+public class GameManager : MonoBehaviour
+{
+    private void Start()
+    {
+        var netManager = ServiceLocator.Get<INetworkManager>();
+        netManager.OnEnvironmentChanged += OnNetworkEnvironmentChanged;
+    }
+    
+    private void OnNetworkEnvironmentChanged(NetworkEnvironment newEnv)
+    {
+        // Save game state before restart
+        SaveGameState();
+        Debug.Log($"Preparing to restart with {newEnv} environment");
+    }
+}
+```
+
+---
+
 ## Unity Packages (Package Manager)
 
 ### Core Packages
@@ -772,5 +943,6 @@ OCTP.Gameplay.asmdef
 
 ## Changelog
 
+- **v1.2** (2026-02-09): Added Core Systems section with NetworkManager documentation (environment switching, compiler flags, debug console)
 - **v1.1** (2026-02-09): Added UniTask v2.5.10 documentation with comprehensive usage patterns, Nakama integration, and migration guide
 - **v1.0** (2026-02-09): Initial documentation of all plugins and packages
